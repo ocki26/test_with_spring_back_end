@@ -15,18 +15,18 @@ public class ArtistDTO {
 
     private String imageUrl;
 
-    // Constructor mặc định (QUAN TRỌNG)
-    public ArtistDTO() {}
+    // QUAN TRỌNG: Thêm constructor mặc định
+    public ArtistDTO() {
+    }
 
-    // Constructor với tham số
-    public ArtistDTO(String name, String description, String companyCode, String imageUrl) {
+    // Constructor với parameters (optional)
+    public ArtistDTO(String name, String description, String companyCode) {
         this.name = name;
         this.description = description;
         this.companyCode = companyCode;
-        this.imageUrl = imageUrl;
     }
 
-    // Getters and Setters
+    // Getters and Setters (giữ nguyên)
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     public String getName() { return name; }
@@ -41,11 +41,9 @@ public class ArtistDTO {
     @Override
     public String toString() {
         return "ArtistDTO{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", companyCode='" + companyCode + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }
 }

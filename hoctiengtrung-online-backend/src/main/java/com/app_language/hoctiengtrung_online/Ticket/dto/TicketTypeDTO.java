@@ -1,14 +1,24 @@
 package com.app_language.hoctiengtrung_online.Ticket.dto;
 
-
-
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public class TicketTypeDTO {
-    private String id; // Có thể null khi tạo mới
+    private String id;
+
+    @NotBlank(message = "Name is required")
     private String name;
+
     private String description;
+
+    @NotNull(message = "Price is required")
+    @Min(value = 0, message = "Price must be >= 0")
     private BigDecimal price;
+
+    @NotNull(message = "Quantity is required")
+    @Min(value = 1, message = "Quantity must be >= 1")
     private Integer quantity;
 
     // Getters Setters

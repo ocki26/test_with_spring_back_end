@@ -1,6 +1,7 @@
 package com.app_language.hoctiengtrung_online.Ticket.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version; // Import này quan trọng
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,22 +11,26 @@ public class Show {
     @Id
     private String id;
 
+    // === ADD: Optimistic Locking ===
+    @Version
+    private Long version;
+    // ===============================
+
     private String name;
     private String description;
-    private String genre; // Thể loại
+    private String genre;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
-    private String locationId; // ID của Location
-    private String locationAddress; // Địa chỉ lấy từ Location (snapshot)
+    private String locationId;
+    private String locationAddress;
 
-    private List<String> artistIds; // Danh sách ID nghệ sĩ tham gia
-    private List<String> imageUrls; // Link ảnh trên server
+    private List<String> artistIds;
+    private List<String> imageUrls;
 
-    private List<TicketType> ticketTypes; // Danh sách loại vé (Embedded)
+    private List<TicketType> ticketTypes;
 
-    private String companyId; // Công ty tổ chức
-
+    private String companyId;
     private boolean active;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -36,9 +41,11 @@ public class Show {
         this.active = true;
     }
 
-    // Getters and Setters
+    // Getters & Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+    public Long getVersion() { return version; } // Getter cho version
+    public void setVersion(Long version) { this.version = version; } // Setter cho version
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getDescription() { return description; }

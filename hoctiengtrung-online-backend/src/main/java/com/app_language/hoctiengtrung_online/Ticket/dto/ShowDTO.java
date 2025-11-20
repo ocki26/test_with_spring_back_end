@@ -14,6 +14,7 @@ public class ShowDTO {
     private LocalDateTime endTime;
     private String locationId; // Chọn location có sẵn
     private List<String> artistIds; // Chọn nghệ sĩ
+    @jakarta.validation.Valid
     private List<TicketTypeDTO> ticketTypes; // Nhập loại vé (giá, số lượng)
     private String companyId; // Nếu admin tạo giùm công ty
 
