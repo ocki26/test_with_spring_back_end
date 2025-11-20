@@ -1,3 +1,4 @@
+// ArtistDTO.java - CÓ THỂ SỬA để không trả về binary data
 package com.app_language.hoctiengtrung_online.Ticket.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,10 +19,12 @@ public class ArtistDTO {
     @Schema(description = "Company code that the artist belongs to", example = "COMP001", required = true)
     private String companyCode;
 
-    @Schema(description = "Artist image URL", example = "https://example.com/images/artist.jpg")
-    private String imageUrl;
+    // XÓA: private String imageUrl;
+    // THÊM: field để frontend biết có ảnh hay không
+    @Schema(description = "Whether artist has image")
+    private Boolean hasImage = false;
 
-    // Constructors, Getters and Setters giữ nguyên
+    // Constructors
     public ArtistDTO() {
     }
 
@@ -40,8 +43,11 @@ public class ArtistDTO {
     public void setDescription(String description) { this.description = description; }
     public String getCompanyCode() { return companyCode; }
     public void setCompanyCode(String companyCode) { this.companyCode = companyCode; }
-    public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    // XÓA: getter/setter imageUrl
+    // THÊM: getter/setter hasImage
+    public Boolean getHasImage() { return hasImage; }
+    public void setHasImage(Boolean hasImage) { this.hasImage = hasImage; }
 
     @Override
     public String toString() {
@@ -49,6 +55,7 @@ public class ArtistDTO {
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", companyCode='" + companyCode + '\'' +
+                ", hasImage=" + hasImage +
                 '}';
     }
 }

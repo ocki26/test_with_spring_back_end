@@ -1,3 +1,4 @@
+// ArtistService.java
 package com.app_language.hoctiengtrung_online.Ticket.service;
 
 import com.app_language.hoctiengtrung_online.Ticket.dto.ArtistDTO;
@@ -16,8 +17,7 @@ public class ArtistService {
     @Autowired
     private ArtistRepository artistRepository;
 
-    @Autowired
-    private FileStorageService fileStorageService;
+    // XÓA: @Autowired private FileStorageService fileStorageService;
 
     public Artist createArtist(ArtistDTO dto, MultipartFile imageFile) {
         try {
@@ -26,13 +26,22 @@ public class ArtistService {
             artist.setDescription(dto.getDescription());
             artist.setCompanyCode(dto.getCompanyCode());
 
-            // Xử lý file ảnh
+            // THAY ĐỔI: Xử lý file ảnh - lưu binary data
             if (imageFile != null && !imageFile.isEmpty()) {
-                String imageUrl = fileStorageService.storeFile(imageFile);
-                artist.setImageUrl(imageUrl);
-            } else if (dto.getImageUrl() != null && !dto.getImageUrl().isEmpty()) {
-                // Nếu không có file nhưng có URL từ DTO
-                artist.setImageUrl(dto.getImageUrl());
+                // Validate file size (tối đa 15MB)
+                if (imageFile.getSize() > 15 * 1024 * 1024) {
+                    throw new RuntimeException("File size too large. Maximum is 15MB");
+                }
+
+                // Validate content type
+                String contentType = imageFile.getContentType();
+                if (contentType == null || !contentType.startsWith("image/")) {
+                    throw new RuntimeException("Only image files are allowed");
+                }
+
+                artist.setImageData(imageFile.getBytes());
+                artist.setImageContentType(contentType);
+                artist.setImageFileName(imageFile.getOriginalFilename());
             }
 
             return artistRepository.save(artist);

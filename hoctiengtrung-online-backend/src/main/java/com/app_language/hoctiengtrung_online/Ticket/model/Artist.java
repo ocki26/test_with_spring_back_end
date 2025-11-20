@@ -1,3 +1,4 @@
+// Artist.java
 package com.app_language.hoctiengtrung_online.Ticket.model;
 
 import org.springframework.data.annotation.Id;
@@ -8,11 +9,15 @@ import java.time.LocalDateTime;
 public class Artist {
     @Id
     private String id;
-
     private String name;
     private String description;
-    private String companyCode; // Liên kết với Company
-    private String imageUrl;
+    private String companyCode;
+
+    // THAY ĐỔI: Thay imageUrl bằng binary data
+    private byte[] imageData;
+    private String imageContentType; // "image/jpeg", "image/png", etc.
+    private String imageFileName;
+
     private boolean active;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -32,8 +37,15 @@ public class Artist {
     public void setDescription(String description) { this.description = description; }
     public String getCompanyCode() { return companyCode; }
     public void setCompanyCode(String companyCode) { this.companyCode = companyCode; }
-    public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    // THAY ĐỔI: Xóa getter/setter imageUrl, thêm binary data
+    public byte[] getImageData() { return imageData; }
+    public void setImageData(byte[] imageData) { this.imageData = imageData; }
+    public String getImageContentType() { return imageContentType; }
+    public void setImageContentType(String imageContentType) { this.imageContentType = imageContentType; }
+    public String getImageFileName() { return imageFileName; }
+    public void setImageFileName(String imageFileName) { this.imageFileName = imageFileName; }
+
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
     public LocalDateTime getCreatedAt() { return createdAt; }

@@ -1,3 +1,4 @@
+// ShowService.java
 package com.app_language.hoctiengtrung_online.Ticket.service;
 
 import com.app_language.hoctiengtrung_online.Ticket.dto.ShowDTO;
@@ -24,8 +25,7 @@ public class ShowService {
     @Autowired
     private LocationRepository locationRepository;
 
-    @Autowired
-    private FileStorageService fileStorageService;
+    // XÓA: @Autowired private FileStorageService fileStorageService;
 
     public Show createShow(ShowDTO dto, List<MultipartFile> images) {
         Show show = new Show();
@@ -37,25 +37,45 @@ public class ShowService {
         show.setCompanyId(dto.getCompanyId());
         show.setArtistIds(dto.getArtistIds());
 
-        // 1. Xử lý Location: Tìm địa điểm để lấy địa chỉ
+        // 1. Xử lý Location
         if (dto.getLocationId() != null) {
             Location loc = locationRepository.findById(dto.getLocationId())
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy địa điểm ID: " + dto.getLocationId()));
             show.setLocationId(loc.getId());
-            show.setLocationAddress(loc.getAddress()); // Điền tự động địa chỉ
+            show.setLocationAddress(loc.getAddress());
         }
 
-        // 2. Xử lý Upload nhiều ảnh
-        List<String> imageUrls = new ArrayList<>();
+        // THAY ĐỔI: 2. Xử lý Upload nhiều ảnh - lưu binary data
+        List<Show.ShowImage> showImages = new ArrayList<>();
         if (images != null) {
+            int order = 0;
             for (MultipartFile file : images) {
                 if (!file.isEmpty()) {
-                    String url = fileStorageService.storeFile(file);
-                    imageUrls.add(url);
+                    try {
+                        // Validate file size và type
+                        if (file.getSize() > 15 * 1024 * 1024) {
+                            throw new RuntimeException("File size too large: " + file.getOriginalFilename());
+                        }
+
+                        String contentType = file.getContentType();
+                        if (contentType == null || !contentType.startsWith("image/")) {
+                            throw new RuntimeException("Only image files are allowed: " + file.getOriginalFilename());
+                        }
+
+                        Show.ShowImage showImage = new Show.ShowImage();
+                        showImage.setImageData(file.getBytes());
+                        showImage.setImageContentType(contentType);
+                        showImage.setImageFileName(file.getOriginalFilename());
+                        showImage.setDisplayOrder(order++);
+
+                        showImages.add(showImage);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Failed to process image: " + file.getOriginalFilename(), e);
+                    }
                 }
             }
         }
-        show.setImageUrls(imageUrls);
+        show.setImages(showImages);
 
         // 3. Xử lý Loại vé (Ticket Types)
         List<TicketType> ticketTypes = new ArrayList<>();
@@ -66,7 +86,7 @@ public class ShowService {
                 type.setDescription(typeDto.getDescription());
                 type.setPrice(typeDto.getPrice());
                 type.setQuantity(typeDto.getQuantity());
-                type.setAvailableQuantity(typeDto.getQuantity()); // Ban đầu còn full
+                type.setAvailableQuantity(typeDto.getQuantity());
                 type.setSoldQuantity(0);
                 type.setActive(true);
                 ticketTypes.add(type);
@@ -77,21 +97,19 @@ public class ShowService {
         return showRepository.save(show);
     }
 
+    // Các method khác giữ nguyên...
     public Show getShowById(String id) {
         return showRepository.findById(id).orElse(null);
     }
 
-    // THÊM METHOD NÀY
     public List<Show> getAllShows() {
         return showRepository.findAll();
     }
 
-    // THÊM METHOD NÀY
     public List<Show> getShowsByCompanyId(String companyId) {
         return showRepository.findByCompanyId(companyId);
     }
 
-    // THÊM METHOD UPDATE (tùy chọn)
     public Show updateShow(String id, ShowDTO dto, List<MultipartFile> images) {
         Optional<Show> existingShow = showRepository.findById(id);
         if (existingShow.isPresent()) {
@@ -111,16 +129,26 @@ public class ShowService {
                 show.setLocationAddress(loc.getAddress());
             }
 
-            // Update images if provided
+            // THAY ĐỔI: Update images if provided
             if (images != null && !images.isEmpty()) {
-                List<String> imageUrls = new ArrayList<>();
+                List<Show.ShowImage> showImages = new ArrayList<>();
+                int order = 0;
                 for (MultipartFile file : images) {
                     if (!file.isEmpty()) {
-                        String url = fileStorageService.storeFile(file);
-                        imageUrls.add(url);
+                        try {
+                            Show.ShowImage showImage = new Show.ShowImage();
+                            showImage.setImageData(file.getBytes());
+                            showImage.setImageContentType(file.getContentType());
+                            showImage.setImageFileName(file.getOriginalFilename());
+                            showImage.setDisplayOrder(order++);
+
+                            showImages.add(showImage);
+                        } catch (Exception e) {
+                            throw new RuntimeException("Failed to process image: " + file.getOriginalFilename(), e);
+                        }
                     }
                 }
-                show.setImageUrls(imageUrls);
+                show.setImages(showImages);
             }
 
             return showRepository.save(show);
