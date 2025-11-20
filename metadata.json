@@ -1,0 +1,5 @@
+{
+  "name": "Admin Show Management Dashboard",
+  "description": "A comprehensive admin dashboard to manage user accounts (partner companies, staff), artists, shows, and track revenue. Built with React, TypeScript, and Tailwind CSS.",
+  "requestFramePermissions": []
+}
