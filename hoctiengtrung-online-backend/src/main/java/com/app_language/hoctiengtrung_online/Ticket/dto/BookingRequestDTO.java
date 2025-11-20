@@ -1,29 +1,31 @@
 package com.app_language.hoctiengtrung_online.Ticket.dto;
 
+import jakarta.validation.constraints.*;
+import lombok.Data;
 
-
+@Data
 public class BookingRequestDTO {
-    private String showId;
-    private String ticketTypeId;
-    private Integer quantity;
-    private String buyerName;
-    private String buyerEmail;
-    private String buyerPhone;
-    private String soldBy; // Mã cộng tác viên (nếu có)
 
-    // Getters Setters
-    public String getShowId() { return showId; }
-    public void setShowId(String showId) { this.showId = showId; }
-    public String getTicketTypeId() { return ticketTypeId; }
-    public void setTicketTypeId(String ticketTypeId) { this.ticketTypeId = ticketTypeId; }
-    public Integer getQuantity() { return quantity; }
-    public void setQuantity(Integer quantity) { this.quantity = quantity; }
-    public String getBuyerName() { return buyerName; }
-    public void setBuyerName(String buyerName) { this.buyerName = buyerName; }
-    public String getBuyerEmail() { return buyerEmail; }
-    public void setBuyerEmail(String buyerEmail) { this.buyerEmail = buyerEmail; }
-    public String getBuyerPhone() { return buyerPhone; }
-    public void setBuyerPhone(String buyerPhone) { this.buyerPhone = buyerPhone; }
-    public String getSoldBy() { return soldBy; }
-    public void setSoldBy(String soldBy) { this.soldBy = soldBy; }
+    @NotBlank(message = "Show ID là bắt buộc")
+    private String showId;
+
+    @NotBlank(message = "Loại vé là bắt buộc")
+    private String ticketTypeId;
+
+    @Min(value = 1, message = "Số lượng vé phải lớn hơn 0")
+    @Max(value = 10, message = "Tối đa 10 vé mỗi lần đặt")
+    private Integer quantity;
+
+    @NotBlank(message = "Tên người mua là bắt buộc")
+    @Size(min = 2, max = 100, message = "Tên phải từ 2-100 ký tự")
+    private String buyerName;
+
+    @Email(message = "Email không hợp lệ")
+    @NotBlank(message = "Email là bắt buộc")
+    private String buyerEmail;
+
+    @Pattern(regexp = "(84|0[3|5|7|8|9])+([0-9]{8})", message = "Số điện thoại không hợp lệ")
+    private String buyerPhone;
+
+    private String soldBy;
 }

@@ -1,7 +1,5 @@
 package com.app_language.hoctiengtrung_online.Ticket.service;
 
-
-
 import com.app_language.hoctiengtrung_online.Ticket.dto.ShowDTO;
 import com.app_language.hoctiengtrung_online.Ticket.dto.TicketTypeDTO;
 import com.app_language.hoctiengtrung_online.Ticket.model.Location;
@@ -15,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ShowService {
@@ -80,5 +79,52 @@ public class ShowService {
 
     public Show getShowById(String id) {
         return showRepository.findById(id).orElse(null);
+    }
+
+    // THÊM METHOD NÀY
+    public List<Show> getAllShows() {
+        return showRepository.findAll();
+    }
+
+    // THÊM METHOD NÀY
+    public List<Show> getShowsByCompanyId(String companyId) {
+        return showRepository.findByCompanyId(companyId);
+    }
+
+    // THÊM METHOD UPDATE (tùy chọn)
+    public Show updateShow(String id, ShowDTO dto, List<MultipartFile> images) {
+        Optional<Show> existingShow = showRepository.findById(id);
+        if (existingShow.isPresent()) {
+            Show show = existingShow.get();
+            show.setName(dto.getName());
+            show.setDescription(dto.getDescription());
+            show.setGenre(dto.getGenre());
+            show.setStartTime(dto.getStartTime());
+            show.setEndTime(dto.getEndTime());
+            show.setArtistIds(dto.getArtistIds());
+
+            // Update location if provided
+            if (dto.getLocationId() != null) {
+                Location loc = locationRepository.findById(dto.getLocationId())
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy địa điểm ID: " + dto.getLocationId()));
+                show.setLocationId(loc.getId());
+                show.setLocationAddress(loc.getAddress());
+            }
+
+            // Update images if provided
+            if (images != null && !images.isEmpty()) {
+                List<String> imageUrls = new ArrayList<>();
+                for (MultipartFile file : images) {
+                    if (!file.isEmpty()) {
+                        String url = fileStorageService.storeFile(file);
+                        imageUrls.add(url);
+                    }
+                }
+                show.setImageUrls(imageUrls);
+            }
+
+            return showRepository.save(show);
+        }
+        throw new RuntimeException("Show not found with id: " + id);
     }
 }
